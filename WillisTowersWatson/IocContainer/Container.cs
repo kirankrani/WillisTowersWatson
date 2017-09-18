@@ -6,7 +6,7 @@ namespace IocContainer
 {
     public class Container : IContainer
     {
-        private readonly IList<RegisteredObject> _registeredObjects = new List<RegisteredObject>();
+        private readonly Dictionary<Type, RegisteredObject> _registeredObjects = new Dictionary<Type, RegisteredObject>();
         public void Register<TTypeToResolve, TConcreteType>()
         {
             Register(typeof(TTypeToResolve), typeof(TConcreteType));
@@ -22,7 +22,7 @@ namespace IocContainer
         }
         public void Register(Type typeToResolve, Type concreteType, LifeCycle lifeCycle)
         {
-            _registeredObjects.Add(new RegisteredObject(typeToResolve, concreteType, lifeCycle));
+            _registeredObjects.Add(typeToResolve, new RegisteredObject(typeToResolve, concreteType, lifeCycle));
         }
 
         public TTypeToResolve Resolve<TTypeToResolve>()
@@ -31,14 +31,12 @@ namespace IocContainer
         }
         public object Resolve(Type typeToResolve)
         {
-
-            var registeredObject = _registeredObjects.FirstOrDefault(o => o.TypeToResolve == typeToResolve);
-            if (registeredObject != null)
-                return GetInstance(registeredObject);
+            if (_registeredObjects.ContainsKey(typeToResolve))
+                return GetInstance(_registeredObjects[typeToResolve]);
 
             else if (typeToResolve.IsGenericType)
             {
-                registeredObject = _registeredObjects.FirstOrDefault(o => o.TypeToResolve == typeToResolve.GetGenericTypeDefinition());
+                var registeredObject = _registeredObjects[typeToResolve.GetGenericTypeDefinition()];
                 if (registeredObject != null)
                 {
                     var closedDestination =
