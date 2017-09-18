@@ -11,7 +11,7 @@ namespace RandomService
             var ioc = new Container();
 
             //register
-            ioc.Register<IConsoleLogger, ConsoleLogger>(LifeCycle.Transient);
+            ioc.Register<IConsoleLogger, ConsoleLogger>(LifeCycle.Singleton);
 
             //resolve
             var consoleLogger = ioc.Resolve<IConsoleLogger>();
@@ -20,6 +20,7 @@ namespace RandomService
 
             var consoleLogger2 = ioc.Resolve<IConsoleLogger>();
 
+            // this will come back as "Test" if the lifecycle is singleton and as null if the lifecycle is transient.
             Console.WriteLine(consoleLogger2.SomeValue);
             Console.ReadLine();
         }
