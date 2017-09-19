@@ -54,10 +54,9 @@ namespace IocContainer
 
         private object GetInstance(RegisteredObject registeredObject)
         {
-            if (registeredObject.Instance != null && registeredObject.LifeCycle != LifeCycle.Transient)
-                return registeredObject.Instance;
-            registeredObject.Instance = GetInstance(registeredObject.ConcreteType);
-            return registeredObject.Instance;
+            if (registeredObject.LifeCycle == LifeCycle.Singleton)
+                return registeredObject.Instance ?? (registeredObject.Instance = GetInstance(registeredObject.ConcreteType));
+            return GetInstance(registeredObject.ConcreteType);
         }
 
         private object GetInstance(Type typeToResolve)
